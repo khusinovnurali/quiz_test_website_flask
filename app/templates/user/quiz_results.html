@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% block title %}Quiz Results{% endblock %}
+{% block content %}
+<h1 class="page-title">Quiz Results</h1>
+
+
+<div class="card">
+    <div class="card-body">
+        <div class="detail-item">
+            <span class="detail-key">Quiz Name:</span>
+            <span class="detail-value">{{ quiz.name }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-key">Your Score:</span>
+            <span class="detail-value">{{ '%.2f'|format(score.total_scored) if score else '0.00' }} / {{ '%.2f'|format(total_possible) }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-key">Percentage:</span>
+            <span class="detail-value">{{ '%.2f'|format(percent) }}%</span>
+        </div>
+        {% if certificate %}
+        <div class="detail-item">
+            <a class="btn btn-success" href="/{{ certificate.file_path }}" download>
+                <i class="bi bi-download"></i> Download Certificate (PDF)
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h5 class="card-title">Question Breakdown</h5>
+        <ol style="list-style: none; padding: 0;">
+            {% for ans in answers %}
+            <li style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: start; gap: 1rem; margin-bottom: 1rem;">
+                    {% if ans.is_correct %}
+                    <i class="bi bi-check-circle-fill" style="color: var(--success); font-size: 1.5rem; flex-shrink: 0;"></i>
+                    {% else %}
+                    <i class="bi bi-x-circle-fill" style="color: var(--danger); font-size: 1.5rem; flex-shrink: 0;"></i>
+                    {% endif %}
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary);">{{ ans.question.question_statement }}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-left: 2.5rem;">
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>Your Answer:</strong> 
+                        {% if ans.selected_option %}
+                            {% set selected_text = ans.question.option1 if ans.selected_option == 1 else (ans.question.option2 if ans.selected_option == 2 else (ans.question.option3 if ans.selected_option == 3 else ans.question.option4)) %}
+                            <span style="color: {% if ans.is_correct %}var(--success){% else %}var(--danger){% endif %};">
+                                Option {{ ans.selected_option }} - {{ selected_text }}
+                            </span>
+                        {% else %}
+                            <span style="color: var(--danger);">No answer</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>Correct Answer:</strong> 
+                        {% set correct_text = ans.question.option1 if ans.question.correct_option == 1 else (ans.question.option2 if ans.question.correct_option == 2 else (ans.question.option3 if ans.question.correct_option == 3 else ans.question.option4)) %}
+                        <span style="color: var(--success); font-weight: 600;">
+                            Option {{ ans.question.correct_option }} - {{ correct_text }}
+                        </span>
+                    </div>
+                    
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong>Points:</strong> 
+                        <span style="color: {% if ans.is_correct %}var(--success){% else %}var(--text-secondary){% endif %};">
+                            {{ '%.2f'|format(ans.points_awarded) }} / {{ '%.2f'|format(ans.question.points or 0) }}
+                        </span>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+
+<!-- Comments Section -->
+<div class="card mt-3">
+    <div class="card-header">
+        <h5 style="margin: 0; color: var(--text-inverse);">
+            <i class="bi bi-chat-dots"></i> Quiz Comments
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('comments.add_comment') }}" style="margin-bottom: 2rem;">
+            <input type="hidden" name="comment_type" value="quiz">
+            <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
+            <div class="form-group">
+                <textarea name="content" class="form-control" rows="3" placeholder="Share your thoughts about this quiz..." required style="resize: vertical;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i> Post Comment
+            </button>
+        </form>
+        {% else %}
+        <div class="alert alert-info">
+            <a href="{{ url_for('auth.login') }}">Login</a> or <a href="{{ url_for('auth.register') }}">Register</a> to leave a comment.
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 2rem;">
+            {% if comments %}
+                {% for comment in comments %}
+                <div class="card" style="margin-bottom: 1rem; background: var(--bg-secondary);">
+                    <div class="card-body">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                            <div>
+                                <strong style="color: var(--text-primary);">{{ comment.user.fullname or comment.user.username }}</strong>
+                                <span style="color: var(--text-tertiary); font-size: 0.875rem; margin-left: 0.5rem;">
+                                    {{ comment.created_at.strftime('%Y-%m-%d %H:%M') if comment.created_at else '' }}
+                                </span>
+                            </div>
+                            {% if current_user.is_authenticated and (current_user.id == comment.user_id or current_user.is_admin) %}
+                            <form method="POST" action="{{ url_for('comments.delete_comment', comment_id=comment.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.5rem;">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        <div style="color: var(--text-primary); line-height: 1.6;">{{ comment.content }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No comments yet. Be the first to comment!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

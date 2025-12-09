@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title %}Attempt Quiz: {{quiz.name}}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{quiz.name}}</h1>
+
+{% if quiz.time_duration > 0 %}
+<div style="text-align: center; margin-bottom: 2rem;">
+    <span id="timer" class="quiz-timer">
+        <i class="bi bi-clock"></i> <span id="timer-text">00:00</span>
+    </span>
+</div>
+{% endif %}
+
+<form id="quizForm" class="quiz-form" method="POST" data-duration="{{ quiz.time_duration }}">
+    {% for question, options in questions_with_options %}
+    <div class="quiz-question">
+        <div class="question-number">Question #{{ loop.index }}</div>
+        <div class="question-statement">{{ question.question_statement }}</div>
+        {% if question.image_path %}
+        <div class="question-image mb-2" style="text-align: center; margin: 1rem 0;">
+            <img src="{{ url_for('static', filename=question.image_path.replace('static/', '')) if question.image_path.startswith('static/') else url_for('static', filename=question.image_path) }}" 
+                 alt="question image" 
+                 class="img-fluid" 
+                 style="max-width:100%; max-height:400px; height:auto; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);" 
+                 onerror="this.style.display='none';" />
+        </div>
+        {% endif %}
+        <div class="quiz-options">
+            {% for option_text, option_num in options %}
+            <label class="radio-option">
+                <input type="radio" name="question_{{ question.id }}" value="{{ option_num }}" required>
+                {{ option_text }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
+        <button type="submit" class="btn btn-primary btn-lg" style="min-width: 200px;">
+            <i class="bi bi-check-circle"></i> Submit Quiz
+        </button>
+    </div>
+</form>
+
+
+<script>
+    (function(){
+        const form = document.getElementById('quizForm');
+        if (!form) return;
+        const quizDuration = parseInt(form.dataset.duration || '0', 10);
+        if (quizDuration > 0) {
+            let timeLeft = quizDuration;
+            function updateTimer() {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                const timerText = document.getElementById('timer-text');
+                if (timerText) {
+                    timerText.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+                }
+                const timerEl = document.getElementById('timer');
+                if (timerEl) {
+                    if (timeLeft <= 60) {
+                        timerEl.style.background = 'linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%)';
+                        timerEl.style.animation = 'pulse 1s infinite';
+                    }
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timeInterval);
+                    alert("Time's up! Your quiz will be submitted automatically.");
+                    form.submit();
+                } else { timeLeft--; }
+            }
+            const timeInterval = setInterval(updateTimer, 1000);
+        }
+    })();
+</script>
+{% endblock %}

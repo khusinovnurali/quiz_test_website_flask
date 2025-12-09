@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block title %}Update Profile{% endblock %}
+{% block content %}
+<h1 class="page-title">Update Profile</h1>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.username.label(class_="form-label") }}
+        {{ form.username(size=32, class_="form-control") }}
+        {% if form.username.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.username.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.fullname.label(class_="form-label") }}
+        {{ form.fullname(class_="form-control") }}
+        {% if form.fullname.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.fullname.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.qualification.label(class_="form-label") }}
+        {{ form.qualification(class_="form-control") }}
+        {% if form.qualification.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.qualification.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.dob.label(class_="form-label") }}
+        {{ form.dob(class_="form-control") }}
+        {% if form.dob.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.dob.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.avatar.label(class_="form-label") }}
+        <div class="d-flex flex-wrap gap-3 mb-3">
+            {% for value, label in form.avatar.choices %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="avatar" id="{{ value }}" value="{{ value }}"
+                    {% if form.avatar.data==value %}checked{% endif %}>
+                <label class="form-check-label" for="{{ value }}">
+                    <i class="bi bi-{{ value }} fs-1"></i>
+                    <br>
+                    {{ label }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        {{ form.submit(class_="btn btn-primary") }}
+    </div>
+</form>
+<div class="mt-4">
+    <h5>Your Certificates</h5>
+    <ul>
+        {% for cert in certificates %}
+        <li><a href="/{{ cert.file_path }}" download>{{ cert.file_path.split('/')[-1] }}</a> - {{ cert.created_at }}</li>
+        {% else %}
+        <li>No certificates yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

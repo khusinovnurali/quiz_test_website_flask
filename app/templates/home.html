@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <!-- Hero Section -->
+    <section class="text-center p-6" style="padding: 4rem 2rem;">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <h1 class="font-bold" style="font-size: 3.5rem; margin-bottom: 1.5rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Welcome to Quiz Master
+            </h1>
+            <p class="text-lg mb-6" style="font-size: 1.25rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto 2rem;">
+                Test your knowledge, track your progress, and compete with others on our interactive learning platform.
+                Join thousands of users who are mastering topics through our engaging quizzes.
+            </p>
+            <div class="d-flex justify-content-center gap-4 mb-6" style="flex-wrap: wrap;">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-rocket-takeoff"></i> Get Started
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="mb-6" style="margin-bottom: 4rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
+            <div class="card h-100">
+                <div class="card-body text-center" style="padding: 2.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1.5rem; color: var(--primary);">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h3 class="mb-3" style="font-size: 1.5rem; font-weight: 700;">Diverse Quiz Topics</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7;">
+                        Explore a wide range of subjects and chapters. From mathematics to literature, science to history, we've got quizzes for every interest.
+                    </p>
+                </div>
+            </div>
+            <div class="card h-100">
+                <div class="card-body text-center" style="padding: 2.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1.5rem; color: var(--success);">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h3 class="mb-3" style="font-size: 1.5rem; font-weight: 700;">Track Your Progress</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7;">
+                        Monitor your performance with detailed analytics. See your scores, track improvements, and identify areas for growth.
+                    </p>
+                </div>
+            </div>
+            <div class="card h-100">
+                <div class="card-body text-center" style="padding: 2.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1.5rem; color: var(--accent);">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <h3 class="mb-3" style="font-size: 1.5rem; font-weight: 700;">Compete & Compare</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7;">
+                        Check the leaderboard to see how you stack up against other quiz-takers. Challenge yourself to climb the rankings.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Call to Action -->
+    <section class="text-center p-6 mb-6" style="padding: 4rem 2rem; background: var(--primary-gradient); border-radius: var(--radius-2xl); margin: 4rem auto; max-width: 900px; box-shadow: var(--shadow-2xl);">
+        <h2 class="mb-3" style="color: white; font-size: 2.5rem; font-weight: 700;">Ready to Test Your Knowledge?</h2>
+        <p class="mb-4" style="color: rgba(255, 255, 255, 0.9); font-size: 1.2rem; margin-bottom: 2rem;">
+            Join our community of learners today and start your journey to mastery.
+        </p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-lg" style="background-color: white; color: var(--primary); font-weight: 700; padding: 1rem 2.5rem;">
+            <i class="bi bi-person-plus"></i> Create Your Account
+        </a>
+    </section>
+
+    <!-- Comments Section -->
+    <section class="mb-6" style="margin: 4rem auto; max-width: 900px;">
+        <div class="card">
+            <div class="card-header">
+                <h2 style="margin: 0; color: var(--text-inverse);">
+                    <i class="bi bi-chat-dots"></i> User Comments
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if current_user.is_authenticated %}
+                <form method="POST" action="{{ url_for('comments.add_comment') }}" style="margin-bottom: 2rem;">
+                    <input type="hidden" name="comment_type" value="app">
+                    <div class="form-group">
+                        <textarea name="content" class="form-control" rows="3" placeholder="Share your thoughts about Quiz Master..." required style="resize: vertical;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Post Comment
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    <a href="{{ url_for('auth.login') }}">Login</a> or <a href="{{ url_for('auth.register') }}">Register</a> to leave a comment.
+                </div>
+                {% endif %}
+                
+                <div style="margin-top: 2rem;">
+                    {% if comments %}
+                        {% for comment in comments %}
+                        <div class="card" style="margin-bottom: 1rem; background: var(--bg-secondary);">
+                            <div class="card-body">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                    <div>
+                                        <strong style="color: var(--text-primary);">{{ comment.user.fullname or comment.user.username }}</strong>
+                                        <span style="color: var(--text-tertiary); font-size: 0.875rem; margin-left: 0.5rem;">
+                                            {{ comment.created_at.strftime('%Y-%m-%d %H:%M') if comment.created_at else '' }}
+                                        </span>
+                                    </div>
+                                    {% if current_user.is_authenticated and (current_user.id == comment.user_id or current_user.is_admin) %}
+                                    <form method="POST" action="{{ url_for('comments.delete_comment', comment_id=comment.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.25rem 0.5rem;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                                <div style="color: var(--text-primary); line-height: 1.6;">{{ comment.content }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No comments yet. Be the first to comment!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

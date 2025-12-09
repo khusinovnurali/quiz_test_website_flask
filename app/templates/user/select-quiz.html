@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% block title %}Select Quiz{% endblock %}
+{% block content %}
+<h1 class="page-title">Select Quiz</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" id="filter-form">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label for="subject_id" class="form-label">Select Subject</label>
+                    <select id="subject_id" name="subject_id" class="form-select">
+                        <option value="">--Select Subject--</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if subject_id==subject.id|string %}selected{% endif %}>
+                            {{ subject.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="chapter_id" class="form-label">Select Chapter</label>
+                    <select id="chapter_id" name="chapter_id" class="form-select">
+                        <option value="">--Select Chapter--</option>
+                        {% for chapter in chapters %}
+                        <option value="{{ chapter.id }}" data-subject-id="{{ chapter.subject_id }}"
+                            {% if chapter_id==chapter.id|string %}selected{% endif %}
+                            {% if subject_id and subject_id|int != chapter.subject_id %}disabled style="display:none"{% endif %}>
+                            {{ chapter.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Quiz Name</th>
+                        <th>Subject</th>
+                        <th>Chapter</th>
+                        <th>Date</th>
+                        <th>Duration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for quiz in quizzes %}
+                    <tr>
+                        <td>{{ quiz.name }}</td>
+                        <td>{{ quiz.chapter.subject.name }}</td>
+                        <td>{{ quiz.chapter.name }}</td>
+                        <td>{{ quiz.date_of_quiz.strftime("%Y-%m-%d") if quiz.date_of_quiz }}</td>
+                        <td>{{ "%d min"|format(quiz.time_duration / 60) if quiz.time_duration }}</td>
+                        <td>
+                            <a href="{{ url_for('users.attempt_quiz', quiz_id=quiz.id) }}"
+                                class="btn btn-primary btn-sm">
+                                <i class="bi bi-play-fill"></i> Attempt Quiz
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            {% if subject_id or chapter_id %}
+                            No quizzes found for the selected filters.
+                            {% else %}
+                            Please select a subject or chapter to view available quizzes.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const subjectSelect = document.getElementById('subject_id');
+    const chapterSelect = document.getElementById('chapter_id');
+    
+    function updateChapters() {
+        const subjectId = subjectSelect.value;
+        const chapters = chapterSelect.querySelectorAll('option');
+        
+        chapters.forEach(option => {
+            if (!subjectId || option.value === "" || option.dataset.subjectId === subjectId) {
+                option.style.display = "block";
+                option.disabled = false;
+            } else {
+                option.style.display = "none";
+                option.disabled = true;
+            }
+        });
+
+        // If the currently selected chapter is now disabled, reset chapter selection
+        if (chapterSelect.selectedOptions[0]?.disabled) {
+            chapterSelect.value = "";
+        }
+    }
+
+    subjectSelect.addEventListener('change', function() {
+        updateChapters();
+        // Auto-submit if a subject is selected
+        if (this.value) {
+            document.getElementById('filter-form').submit();
+        }
+    });
+
+    chapterSelect.addEventListener('change', function() {
+        if (this.value) {
+            document.getElementById('filter-form').submit();
+        }
+    });
+
+    // Initial setup
+    updateChapters();
+});
+</script>
+{% endblock %}

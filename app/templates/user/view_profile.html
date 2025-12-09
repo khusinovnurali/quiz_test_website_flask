@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block title %}{{ user.fullname }}'s Profile{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-{{ user.avatar }} display-1 mb-3"></i>
+                    <h2 class="card-title">{{ user.fullname }}</h2>
+                    <p class="card-text text-muted">{{ user.qualification or 'No qualification' }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Certificates</h3>
+                </div>
+                <div class="card-body">
+                    {% if certificates %}
+                    <div class="list-group">
+                        {% for cert in certificates %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ cert.quiz.name }}</h6>
+                                    <small class="text-muted">Earned on {{ cert.created_at.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                {% if current_user.id == user.id %}
+                                <a href="/{{ cert.file_path }}" class="btn btn-sm btn-outline-primary" download>
+                                    <i class="bi bi-download me-1"></i> Download
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="mb-0">No certificates yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Recent Quiz Attempts</h3>
+                </div>
+                <div class="card-body">
+                    {% if scores %}
+                    <div class="list-group">
+                        {% for score in scores %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">{{ score.quiz.name }}</h6>
+                                    <small class="text-muted">{{ score.timestamp.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ "%.2f"|format(score.total_scored) }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="mb-0">No quiz attempts yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

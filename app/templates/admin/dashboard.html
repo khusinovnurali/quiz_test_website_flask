@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+<h1 class="page-title">
+    <i class="bi bi-speedometer2"></i> Admin Dashboard
+</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="width: 50px; height: 50px; border-radius: var(--radius-full); background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem;">
+                    <i class="bi bi-bar-chart"></i>
+                </div>
+                <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Average Scores</h3>
+            </div>
+            <canvas id="averageScoresChart"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="width: 50px; height: 50px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem;">
+                    <i class="bi bi-pie-chart"></i>
+                </div>
+                <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Completion Rates</h3>
+            </div>
+            <canvas id="completionRatesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('averageScoresChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ quiz_names| tojson }},
+            datasets: [{
+                label: 'Average Score',
+                data: {{ average_scores| tojson }},
+                backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                borderColor: 'rgba(99, 102, 241, 1)',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    const ctx1 = document.getElementById('completionRatesChart')
+
+    new Chart(ctx1, {
+        type: 'pie',
+        data: {
+            labels: {{ quiz_names| tojson }},
+            datasets: [{
+                label: 'Completion Rate',
+                data: {{ completion_rates| tojson }},
+                backgroundColor: [
+                    'rgba(99, 102, 241, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(245, 158, 11, 0.8)',
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(236, 72, 153, 0.8)',
+                    'rgba(14, 165, 233, 0.8)'
+                ],
+                borderWidth: 2,
+                borderColor: 'var(--bg-card)',
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    })
+</script>
+{% endblock %}

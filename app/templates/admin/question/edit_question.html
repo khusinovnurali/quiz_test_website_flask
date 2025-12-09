@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block title %}Edit Question for {{ quiz.name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">Edit Question for {{ quiz.name }}</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.question_statement.label(class_="form-label") }}
+        {{ form.question_statement(class_="form-control") }}
+        {% if form.question_statement.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.question_statement.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.option1.label(class_="form-label") }}
+        {{ form.option1(class_="form-control") }}
+        {% if form.option1.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.option1.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.option2.label(class_="form-label") }}
+        {{ form.option2(class_="form-control") }}
+        {% if form.option2.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.option2.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.option3.label(class_="form-label") }}
+        {{ form.option3(class_="form-control") }}
+        {% if form.option3.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.option3.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.option4.label(class_="form-label") }}
+        {{ form.option4(class_="form-control") }}
+        {% if form.option4.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.option4.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.correct_option.label(class_="form-label") }}
+        {{ form.correct_option(class_="form-control") }}
+        {% if form.correct_option.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.correct_option.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.points.label(class_="form-label") }}
+        {{ form.points(class_="form-control") }}
+        {% if form.points.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.points.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.image.label(class_="form-label") }}
+        {{ form.image(class_="form-control") }}
+        {% if question.image_path %}
+        <div class="mt-2">
+            <img src="/{{ question.image_path }}" alt="question image" class="img-fluid" style="max-width:200px; height:auto;" />
+        </div>
+        {% endif %}
+        {% if form.image.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.image.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div>
+        {{ form.submit(class_="btn btn-primary btn-block") }}
+    </div>
+</form>
+{% endblock %}

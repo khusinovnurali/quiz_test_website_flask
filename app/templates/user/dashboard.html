@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+{% block title %}User Dashboard{% endblock %}
+{% block content %}
+<h1 class="page-title">
+    <i class="bi bi-speedometer2"></i> Dashboard
+</h1>
+
+<section class="mb-6">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <div class="card">
+            <div class="card-body">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700;">Your Profile</h3>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">Account Information</p>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key"><i class="bi bi-envelope"></i> Username:</span>
+                    <span class="detail-value">{{ current_user.username }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key"><i class="bi bi-person"></i> Full Name:</span>
+                    <span class="detail-value">{{ current_user.fullname }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key"><i class="bi bi-mortarboard"></i> Qualification:</span>
+                    <span class="detail-value">{{ current_user.qualification or 'N/A' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key"><i class="bi bi-calendar"></i> DOB:</span>
+                    <span class="detail-value">{{ current_user.dob }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700;">Progress</h3>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">Your Statistics</p>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key"><i class="bi bi-question-circle"></i> Attempted Quizzes:</span>
+                    <span class="detail-value" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ total_attempted_quizzes }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key"><i class="bi bi-star"></i> Average Score:</span>
+                    <span class="detail-value" style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ average_score|round(2) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-6">
+    <div class="card">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="width: 50px; height: 50px; border-radius: var(--radius-full); background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem;">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Quiz History</h3>
+            </div>
+            {% if scores %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-question-circle"></i> Quiz Name</th>
+                            <th><i class="bi bi-calendar"></i> Attempted Time</th>
+                            <th><i class="bi bi-star"></i> Score</th>
+                            <th><i class="bi bi-eye"></i> View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for score in scores %}
+                        <tr>
+                            <td><strong>{{ score.quiz.name }}</strong></td>
+                            <td>{{ score.timestamp.strftime("%Y-%m-%d %H:%M") }}</td>
+                            <td><span style="font-weight: 700; color: var(--success);">{{ score.total_scored }}</span></td>
+                            <td>
+                                <a href="{{ url_for('users.quiz_results', quiz_id=score.quiz.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <i class="bi bi-inbox" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="font-size: 1.125rem;">No quiz attempts yet. Start your first quiz!</p>
+                <a href="{{ url_for('users.select_quiz') }}" class="btn btn-primary mt-3">
+                    <i class="bi bi-question-circle"></i> Select Quiz
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

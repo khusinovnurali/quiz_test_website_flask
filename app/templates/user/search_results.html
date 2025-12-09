@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}User Search Results{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Search Results</h1>
+    {% if query %}
+    <p>Results for: "{{ query }}"</p>
+    {% endif %}
+    
+    <div class="row">
+        {% for user in users %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-{{ user.avatar }} fs-1 me-3"></i>
+                        <div>
+                            <h5 class="card-title">{{ user.fullname }}</h5>
+                            <h6 class="card-subtitle text-muted">{{ user.qualification or 'No qualification' }}</h6>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('users.view_profile', user_id=user.id) }}" class="btn btn-primary">View Profile</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <p>No users found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

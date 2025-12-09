@@ -1,0 +1,193 @@
+<!doctype html>
+<html data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head %}
+    <title>{% block title %}{% endblock %} - Quiz Master</title>
+    {% endblock %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a href="{{ url_for('home') }}" class="navbar-brand">Quiz Master</a>
+            
+            {% if current_user.is_authenticated %}
+            <form class="d-flex mx-auto" action="{{ url_for('users.search_users') }}" method="get">
+                <div class="input-group">
+                    <input class="form-control" type="search" name="q" placeholder="Search users..." aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
+            {% endif %}
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="bi bi-sun-fill" id="themeIcon"></i>
+                    </button>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item"><a href="{{ url_for('auth.logout') }}" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                {% else %}
+                <li class="nav-item"><a href="{{ url_for('auth.login') }}" class="nav-link"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+                <li class="nav-item"><a href="{{ url_for('auth.register') }}" class="nav-link"><i class="bi bi-person-plus"></i> Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Left Drawer -->
+    {% if current_user.is_authenticated %}
+        <aside class="drawer">
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="{{ url_for('admin.manage_subjects') }}" class="nav-link"><i class="bi bi-book"></i> Manage Subjects</a>
+            <a href="{{ url_for('admin.manage_users') }}" class="nav-link"><i class="bi bi-people"></i> Manage Users</a>
+            {% else %}
+            <a href="{{ url_for('users.dashboard') }}" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="{{ url_for('users.leaderboard') }}" class="nav-link"><i class="bi bi-trophy"></i> Leaderboard</a>
+            <a href="{{ url_for('users.select_quiz') }}" class="nav-link"><i class="bi bi-question-circle"></i> Select Quiz</a>
+            <a href="{{ url_for('users.update_profile') }}" class="nav-link"><i class="bi bi-person"></i> Update Profile</a>
+            <a href="{{ url_for('users.change_password') }}" class="nav-link"><i class="bi bi-key"></i> Change Password</a>
+            {% endif %}
+        </aside>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="position: relative;">
+            {{ message }}
+            <button type="button" class="btn-close" onclick="this.parentElement.remove()" aria-label="Close" style="position: absolute; top: 50%; right: 1rem; transform: translateY(-50%); font-size: 1.5rem; line-height: 1; padding: 0.5rem; background: none; border: none; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;">×</button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Page Content -->
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Theme Toggle Script -->
+    <script>
+    (function() {
+        'use strict';
+        
+        function initTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            // Get saved theme or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            
+            // Set theme attribute immediately
+            html.setAttribute('data-theme', savedTheme);
+            
+            // Update icon
+            if (themeIcon) {
+                if (savedTheme === 'dark') {
+                    themeIcon.className = 'bi bi-moon-fill';
+                } else {
+                    themeIcon.className = 'bi bi-sun-fill';
+                }
+            }
+        }
+        
+        function setupThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const html = document.documentElement;
+            
+            if (!themeToggle || !themeIcon) {
+                return;
+            }
+            
+            // Add click event listener
+            themeToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const currentTheme = html.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                // Update theme attribute
+                html.setAttribute('data-theme', newTheme);
+                
+                // Save to localStorage
+                localStorage.setItem('theme', newTheme);
+                
+                // Update icon
+                if (newTheme === 'dark') {
+                    themeIcon.className = 'bi bi-moon-fill';
+                } else {
+                    themeIcon.className = 'bi bi-sun-fill';
+                }
+            });
+        }
+        
+        // Initialize immediately
+        initTheme();
+        
+        // Setup toggle when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupThemeToggle);
+        } else {
+            setupThemeToggle();
+        }
+    })();
+    </script>
+
+    <!-- Hover Overlay Effect Script -->
+    <script>
+    (function() {
+        'use strict';
+        
+        function setupHoverOverlay() {
+            const body = document.body;
+            const interactiveSelectors = [
+                '.card',
+                '.btn',
+                '.drawer a',
+                '.quiz-question',
+                '.table tbody tr',
+                '.detail-item',
+                '.nav-link',
+                '.radio-option'
+            ];
+            
+            interactiveSelectors.forEach(function(selector) {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(function(element) {
+                    element.addEventListener('mouseenter', function() {
+                        body.classList.add('has-hover-overlay');
+                    });
+                    
+                    element.addEventListener('mouseleave', function() {
+                        body.classList.remove('has-hover-overlay');
+                    });
+                });
+            });
+        }
+        
+        // Setup when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupHoverOverlay);
+        } else {
+            setupHoverOverlay();
+        }
+    })();
+    </script>
+
+</body>
+
+</html>

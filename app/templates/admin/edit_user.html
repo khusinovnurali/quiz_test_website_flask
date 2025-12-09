@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Edit User{% endblock %}
+{% block content %}
+<h1 class="page-title">Edit User</h1>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(class_='form-control') }}
+    </div>
+    <div class="form-group">
+        {{ form.fullname.label }}
+        {{ form.fullname(class_='form-control') }}
+    </div>
+    <div class="form-group">
+        {{ form.qualification.label }}
+        {{ form.qualification(class_='form-control') }}
+    </div>
+    <div class="form-group">
+        {{ form.dob.label }}
+        {{ form.dob(class_='form-control') }}
+    </div>
+    <div class="form-group">
+        {{ form.avatar.label }}
+        {{ form.avatar(class_='form-control') }}
+    </div>
+    <div>
+        {{ form.submit(class_='btn btn-primary') }}
+    </div>
+</form>
+{% endblock %}

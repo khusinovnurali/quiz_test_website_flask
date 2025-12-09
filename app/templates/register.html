@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto;">
+    <div class="card">
+        <div class="card-body" style="padding: 3rem;">
+            <div class="text-center mb-5">
+                <div style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <h1 class="page-title" style="margin-bottom: 0.5rem; font-size: 2rem;">Create Account</h1>
+                <p style="color: var(--text-secondary);">Join Quiz Master and start your learning journey</p>
+            </div>
+
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.username.label(class_="form-label") }}
+                    <div style="position: relative;">
+                        <i class="bi bi-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                        {{ form.username(size=32, class_="form-control", style="padding-left: 3rem;") }}
+                    </div>
+                    {% if form.username.errors %}
+                    <ul class="errors" style="color: var(--danger); margin-top: 0.5rem; font-size: 0.875rem;">
+                        {% for error in form.username.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class_="form-label") }}
+                    <div style="position: relative;">
+                        <i class="bi bi-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                        {{ form.password(size=32, class_="form-control", style="padding-left: 3rem;") }}
+                    </div>
+                    {% if form.password.errors %}
+                    <ul class="errors" style="color: var(--danger); margin-top: 0.5rem; font-size: 0.875rem;">
+                        {% for error in form.password.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.confirm_password.label(class_="form-label") }}
+                    <div style="position: relative;">
+                        <i class="bi bi-lock-fill" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                        {{ form.confirm_password(size=32, class_="form-control", style="padding-left: 3rem;") }}
+                    </div>
+                    {% if form.confirm_password.errors %}
+                    <ul class="errors" style="color: var(--danger); margin-top: 0.5rem; font-size: 0.875rem;">
+                        {% for error in form.confirm_password.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.fullname.label(class_="form-label") }}
+                    <div style="position: relative;">
+                        <i class="bi bi-person" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                        {{ form.fullname(class_="form-control", style="padding-left: 3rem;") }}
+                    </div>
+                    {% if form.fullname.errors %}
+                    <ul class="errors" style="color: var(--danger); margin-top: 0.5rem; font-size: 0.875rem;">
+                        {% for error in form.fullname.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.qualification.label(class_="form-label") }}
+                    <div style="position: relative;">
+                        <i class="bi bi-mortarboard" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                        {{ form.qualification(class_="form-control", style="padding-left: 3rem;") }}
+                    </div>
+                    {% if form.qualification.errors %}
+                    <ul class="errors" style="color: var(--danger); margin-top: 0.5rem; font-size: 0.875rem;">
+                        {% for error in form.qualification.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.dob.label(class_="form-label") }}
+                    <div style="position: relative;">
+                        <i class="bi bi-calendar" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-tertiary);"></i>
+                        {{ form.dob(class_="form-control", style="padding-left: 3rem;") }}
+                    </div>
+                    {% if form.dob.errors %}
+                    <ul class="errors" style="color: var(--danger); margin-top: 0.5rem; font-size: 0.875rem;">
+                        {% for error in form.dob.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.avatar.label(class_='form-label') }}
+                    <div class="mb-3 text-center" style="padding: 1.5rem; background: var(--bg-secondary); border-radius: var(--radius-lg);">
+                        <i id="avatar-preview" class="bi bi-person-circle" style="font-size: 5rem; color: var(--primary);"></i>
+                    </div>
+                    {{ form.avatar(class_='form-control', onchange='updateAvatarPreview(this.value)') }}
+                    {% if form.avatar.errors %}
+                    <ul class="errors" style="color: var(--danger); margin-top: 0.5rem; font-size: 0.875rem;">
+                        {% for error in form.avatar.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                <div class="form-group mt-4">
+                    {{ form.submit(class_="btn btn-primary btn-block btn-lg") }}
+                </div>
+            </form>
+
+            <div class="text-center mt-4" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Already have an account?</p>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateAvatarPreview(value) {
+    const preview = document.getElementById('avatar-preview');
+    preview.className = 'bi bi-' + value;
+}
+</script>
+{% endblock %}

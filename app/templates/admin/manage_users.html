@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+<h1 class="page-title">Manage Users</h1>
+
+<div class="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>Id</th>
+                <th>Avatar</th>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Qualification</th>
+                <th>Date of Birth</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            {% if user.username != "admin@quiz.com" %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td><i class="bi bi-{{ user.avatar }} fs-4"></i></td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.fullname }}</td>
+                <td>{{ user.qualification }}</td>
+                <td>{{ user.dob }}</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" href="{{ url_for('admin.edit_user', user_id=user.id) }}">Edit</a>
+                    <form style="display:inline" method="post" action="{{ url_for('admin.delete_user', user_id=user.id) }}" onsubmit="return confirm('Delete user?');">
+                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a class="btn btn-success mt-3" href="{{ url_for('admin.add_user') }}">Add User</a>
+
+{% endblock %}

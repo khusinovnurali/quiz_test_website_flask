@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block title %}Add Quiz for {{ chapter.name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">Add Quiz for {{ chapter.name }}</h1>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.name.label(class_="form-label") }}
+        {{ form.name(class_="form-control") }}
+        {% if form.name.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.name.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.date_of_quiz.label(class_="form-label") }}
+        {{ form.date_of_quiz(class_="form-control") }}
+        {% if form.date_of_quiz.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.date_of_quiz.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.time_duration.label(class_="form-label") }}
+        {{ form.time_duration(class_="form-control") }}
+        {% if form.time_duration.errors %}
+        <ul class="errors text-danger mt-2">
+            {% for error in form.time_duration.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div>
+        {{ form.submit(class_="btn btn-primary btn-block") }}
+    </div>
+</form>
+{% endblock %}

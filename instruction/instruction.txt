@@ -1,0 +1,74 @@
+QOLLANMA — savollarni .txt fayldan import qilish
+
+Bu qollanma sizga qanday qilib savollarni plain-text (.txt) fayl orqali quiz-ga (testga) yuklashni (import) o‘rgatadi.
+
+1) Fayl formatiga talablar
+- Har bir savol blok 6 qatordan iborat bo‘lishi kerak:
+  1) Savol matni
+  2) Variant 1
+  3) Variant 2
+  4) Variant 3
+  5) Variant 4
+  6) To‘g‘ri variant raqami (1-4)
+- Har bir blokning oxiriga bitta bo‘sh qator qo‘yiladi (bloklarni ajratish uchun).
+- Faylni UTF-8 kodlash bilan saqlang (agar o‘zbekcha belgilardan foydalanilsa).
+
+Misol (fayl ichidagi ko‘rinishi):
+What is the capital of France?
+Paris
+Lyon
+Marseille
+Nice
+1
+
+What is 2+2?
+3
+4
+5
+6
+2
+
+Which language is this project written in?
+Java
+Python
+C#
+Go
+2
+
+2) Qaysi quiz-ga yuklashni tanlash
+- Terminaldan quyidagicha mavjud quizlarni ko‘ring:
+  & .venv\Scripts\python.exe scripts\list_quizzes.py
+- Chiqqan ro‘yxatda kerakli quiz id (masalan: id=2) ni eslab qoling.
+
+3) Importni bajarish (PowerShell misol)
+- Loyiha ildizida (project root) quyidagi buyruqni bajaring:
+  & .venv\Scripts\python.exe scripts\import_questions.py <path-to-your-file> <quiz_id>
+- Misol:
+  & .venv\Scripts\python.exe scripts\import_questions.py sample_questions.txt 2
+- Skript chiqishi: "Found X question blocks in file" va "Imported Y questions into quiz id 2"
+
+4) Importdan keyingi tekshiruv
+- Web UI orqali:
+  - http://127.0.0.1:5000 ga kiring va admin sifatida login qiling (default: admin@quiz.com / admin123)
+  - Subject → Chapter → Quiz → Manage Questions bo‘limiga o‘ting va yangi savollarni ko‘ring.
+- Yoki yordamchi skript bilan:
+  & .venv\Scripts\python.exe scripts\show_questions_for_quiz.py
+  (agar skript ma’lum quiz id ga yozilgan bo‘lsa) yoki `scripts/list_quizzes.py` orqali id ni bilib, tegishli skriptni sozlang.
+
+5) Muammolar va yechimlar
+- Agar skript "Skipping block ... parse error" deb chiqsa — o‘sha blokni .txt faylda tekshirib, 6 qatordan iborat ekanligini va to‘g‘ri variant raqami 1-4 oralig‘ida ekanligini ta’minlang.
+- Kodlash muammosi bo‘lsa (o‘zbekcha belgilar noto‘g‘ri ko‘rinishi): faylni UTF-8 bilan qayta saqlang.
+- Katta import qilishdan oldin zaxira (backup) oling:
+  copy .\quiz_master.db .\quiz_master.db.bak
+
+6) Qo‘shimcha tavsiyalar
+- Agar savollarni Excel yoki Google Sheetsda tayyorlasangiz, CSV-ga eksport qilib, CSV import uchun meni so‘rashingiz mumkin (men CSV import qo‘shib bera olaman).
+- Katta miqdordagi savollar uchun preview (importdan oldin ko‘rib chiqish), duplicate tekshirish va transaction rollback funksiyalarini qo‘shish maqsadga muvofiq.
+
+7) Foydalanish uchun tez qadamlar (cheklangan):
+- Fayl tayyorlang: `my_questions.txt` (yuqoridagi formatda).
+- Quiz id-ni biling: `& .venv\Scripts\python.exe scripts\list_quizzes.py`
+- Import qiling: `& .venv\Scripts\python.exe scripts\import_questions.py my_questions.txt 2`
+- Tekshiring: admin UI yoki `scripts/show_questions_for_quiz.py` yordamida.
+
+Agar xohlasangiz, men siz uchun CSV import yoki admin web sahifasiga "fayl yuklash" (upload + preview + confirm) qo‘shib bera olaman. Qaysi variantni xohlaysiz? 
